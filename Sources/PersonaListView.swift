@@ -1,14 +1,16 @@
 import SwiftUI
 
+private struct EditID: Identifiable { let id: UUID }
+
 struct PersonaListView: View {
     @EnvironmentObject var personas: PersonaStore
-    @State private var editingId: UUID?
+    @State private var editingId: EditID?
 
     var body: some View {
         NavigationStack {
             List {
                 ForEach(personas.personas) { persona in
-                    Button { editingId = persona.id } label: {
+                    Button { editingId = EditID(id: persona.id) } label: {
                         HStack(spacing: 12) {
                             Circle()
                                 .fill(Color(hex: persona.colorHex))
@@ -31,14 +33,14 @@ struct PersonaListView: View {
                     Button {
                         let persona = Persona.blank()
                         personas.add(persona)
-                        editingId = persona.id
+                        editingId = EditID(id: persona.id)
                     } label: {
                         Image(systemName: "plus")
                     }
                 }
             }
-            .sheet(item: $editingId) { id in
-                PersonaEditorView(personaId: id)
+            .sheet(item: $editingId) { editID in
+                PersonaEditorView(personaId: editID.id)
             }
         }
     }

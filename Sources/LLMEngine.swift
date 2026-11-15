@@ -74,8 +74,8 @@ final class LLMEngine: ObservableObject {
         vocab = llama_model_get_vocab(loadedModel)
 
         var contextParams = llama_context_default_params()
-        contextParams.n_ctx = Self.contextSize
-        contextParams.n_batch = 512
+        contextParams.n_ctx = UInt32(Self.contextSize)
+        contextParams.n_batch = UInt32(512)
         let threads = Int32(max(2, ProcessInfo.processInfo.processorCount / 2))
         contextParams.n_threads = threads
         contextParams.n_threads_batch = threads
@@ -143,7 +143,7 @@ final class LLMEngine: ObservableObject {
             }
             guard let self, let sampler else { return }
 
-            llama_kv_cache_clear(context)
+            llama_memory_clear(llama_get_memory(context), false)
             var promptTokens = self.tokenize(prompt, addSpecial: true)
             guard !promptTokens.isEmpty else { return }
 
@@ -168,7 +168,7 @@ final class LLMEngine: ObservableObject {
         }
     }
 
-    private func makeSampler() -> OpaquePointer? {
+    private func makeSampler() -> UnsafeMutablePointer<llama_sampler>? {
         let params = llama_sampler_chain_default_params()
         guard let chain = llama_sampler_chain_init(params) else { return nil }
         llama_sampler_chain_add(chain, llama_sampler_init_top_k(40))
