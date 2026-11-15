@@ -8,10 +8,22 @@ on:
 jobs:
   build:
     runs-on: macos-latest
+    timeout-minutes: 120
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Clone llama.cpp
+        run: git clone --depth 1 https://github.com/ggerganov/llama.cpp.git ../llama.cpp
+
+      - name: Install cmake
+        run: brew install cmake
+
+      - name: Build llama.xcframework (iOS device only)
+        run: |
+          cd ../llama.cpp
+          bash build-xcframework.sh ios-device
 
       - name: Install xcodegen
         run: brew install xcodegen

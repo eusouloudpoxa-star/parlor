@@ -1,10 +1,6 @@
 name: Parlor
 options:
   bundleIdPrefix: dev.parlor
-packages:
-  llama.cpp:
-    url: https://github.com/ggerganov/llama.cpp.git
-    branch: master
 targets:
   Parlor:
     type: application
@@ -16,8 +12,8 @@ targets:
           - Info.plist
       - path: Resources
     dependencies:
-      - package: llama.cpp
-        product: llama
+      - framework: ../llama.cpp/build-apple/llama.xcframework
+        embed: true
     settings:
       base:
         INFOPLIST_FILE: Sources/Info.plist
@@ -26,3 +22,4 @@ targets:
         SWIFT_VERSION: "5.0"
         TARGETED_DEVICE_FAMILY: "1,2"
         CODE_SIGN_STYLE: Automatic
+        CODE_SIGN_ON_COPY: NO
