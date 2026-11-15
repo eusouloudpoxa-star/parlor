@@ -1,0 +1,44 @@
+name: Build IPA
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install xcodegen
+        run: brew install xcodegen
+
+      - name: Generate Xcode project
+        run: xcodegen
+
+      - name: Build archive
+        run: |
+          xcodebuild \
+            -project Parlor.xcodeproj \
+            -scheme Parlor \
+            -configuration Release \
+            -archivePath build/Parlor.xcarchive \
+            archive \
+            CODE_SIGNING_ALLOWED=NO
+
+      - name: Package unsigned IPA
+        run: |
+          rm -rf build/Payload
+          mkdir -p build/Payload
+          cp -R "build/Parlor.xcarchive/Products/Applications/Parlor.app" build/Payload/
+          (cd build && zip -qry Parlor-unsigned.ipa Payload)
+
+      - name: Upload IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: Parlor-unsigned
+          path: build/Parlor-unsigned.ipa
+          retention-days: 30

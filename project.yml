@@ -1,0 +1,28 @@
+name: Parlor
+options:
+  bundleIdPrefix: dev.parlor
+packages:
+  llama.cpp:
+    url: https://github.com/ggerganov/llama.cpp.git
+    branch: master
+targets:
+  Parlor:
+    type: application
+    platform: iOS
+    deploymentTarget: "16.0"
+    sources:
+      - path: Sources
+        excludes:
+          - Info.plist
+      - path: Resources
+    dependencies:
+      - package: llama.cpp
+        product: llama
+    settings:
+      base:
+        INFOPLIST_FILE: Sources/Info.plist
+        GENERATE_INFOPLIST_FILE: NO
+        PRODUCT_BUNDLE_IDENTIFIER: dev.parlor.app
+        SWIFT_VERSION: "5.0"
+        TARGETED_DEVICE_FAMILY: "1,2"
+        CODE_SIGN_STYLE: Automatic
